@@ -1,12 +1,15 @@
 import React, { Component } from 'react';
 import { action } from 'mobx';
+import { observer } from 'mobx-react';
 import * as Papa from 'papaparse';
+import Storage from '../../storage/storage';
 
 //* Ruta del archivo, PD* TIENE QUE ESTAR EN PUBLIC SI NO NO SIRVE
 var csvFilePath = '/data/fest-responses-v1.csv';
 //* Este arreglo guardará cada una de las líneas por persona que salen del CSV
 var csvDataLines: any = [];
 var csvData: any = [];
+
 
 class App extends Component {
   constructor(props: any) {
@@ -20,7 +23,7 @@ class App extends Component {
 
   //* Ejecutará el métdo asíncrono, ya que se usa Fetch
   componentWillMount() {
-    this.csvGetDataAsync();
+    Storage.csvGetDataAsync();
   }
 
   //* Realiza el fecth donde de manera asíncrona se hace la petición
@@ -40,16 +43,40 @@ class App extends Component {
   //  línea como un sujeto independiente que permitirá la consulta como matriz
   @action csvGetData(result: any) {
     this.setState({ data: result.data });
-    result.data.forEach(function(element: any){
+    result.data.forEach(function (element: any) {
       csvDataLines.push(element);
-      
     });
-    console.log(csvDataLines[0][1]);
+
+    this.CosineSingularityByMusicGenre(2);
   }
 
-  @action CosineSingularityByMusicGenre(valueByUser: number, userIndex: number) {
-    if(csvDataLines){
-      console.log(csvDataLines[5][0]);
+  @action CosineSingularityByMusicGenre(userIndex: number) {
+    let d1 = csvDataLines[userIndex].slice(3, 19);
+    if (csvDataLines) {
+      for (let index = 1; index < csvDataLines.length; index++) {
+        let d2 = csvDataLines[index].slice(3, 19);
+        var sumD1D2 = 0;
+        var sumD1 = 0;
+        var sumD2 = 0;
+        var magD1 = 0;
+        var magD2 = 0;
+
+        let cosineResults = [];
+        for (let indexB = 0; indexB < d1.length; indexB++) {
+          sumD1D2 += (parseInt(d1[indexB]) * parseInt(d2[indexB]));
+          sumD1 += (parseInt(d1[indexB]) * parseInt(d1[indexB]));
+          sumD2 += (parseInt(d2[indexB]) * parseInt(d2[indexB]));
+
+
+          magD1 = Math.abs(Math.sqrt(sumD1));
+          magD2 = Math.abs(Math.sqrt(sumD2));
+
+          cosineResults.push(sumD1D2 / (magD1 * magD2));
+        }
+        console.log(cosineResults);
+
+        return cosineResults;
+      }
     }
   }
 
@@ -71,4 +98,4 @@ class App extends Component {
   }
 }
 
-export default App;
+export default observer(App);
