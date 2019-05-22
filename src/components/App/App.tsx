@@ -9,10 +9,12 @@ class App extends Component {
   }
 
   //* Ejecutará el métdo asíncrono, ya que se usa Fetch
-  componentWillMount() {
+  componentDidMount() {
     Storage.csvGetDataAsync();
+    setTimeout(() => {
+      Storage.cosineSingularityGeneral(15);
+    }, 2000);
   }
-
 
   render() {
     return (
