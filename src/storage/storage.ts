@@ -3,12 +3,14 @@ import * as Papa from 'papaparse';
 
 class Storage {
     @observable csvFilePath: string = '/data/fest-responses-v1.csv';
-    @observable csvDataLines: any = observable([]);
+    @observable csvDataLines: any = [];
 
-    constructor(){
+    constructor() {
         this.csvGetData = this.csvGetData.bind(this);
     }
 
+    //* Realiza el fecth donde de manera asíncrona se hace la petición
+    //  localmente sobre el archivo CSV, luego de esto, se codifica en UTF-8
     @action csvFetch() {
         return fetch(this.csvFilePath).then(function (response: any) {
             let csvReader = response.body.getReader();
@@ -20,9 +22,11 @@ class Storage {
         });
     }
 
+    //* En este método que se ejecuta tras la promesa del fetch, se agrega cada
+    //  línea como un sujeto independiente que permitirá la consulta como matriz
     @action csvGetData(result: any) {
         if (result.data && result.data !== null && result.data !== undefined) {
-            result.data.forEach(function (this: Storage, element: any) {
+            result.data.forEach((element: any) => {
                 if (element !== undefined) {
                     console.log(element);
                     this.csvDataLines.push(element);
@@ -32,6 +36,7 @@ class Storage {
         }
     }
 
+    //* Método asíncrono que cuando se complete la petición realizará el Parse del CSV a texto
     async csvGetDataAsync() {
         let csvData = await this.csvFetch();
 
