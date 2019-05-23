@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
-import { action } from 'mobx';
 import { observer } from 'mobx-react';
+import { BrowserRouter as Router, Route, Switch, Link } from 'react-router-dom';
+
+import Dashboard from '../Dashboard/Dashboard';
 import Storage from '../../storage/storage';
 
 class App extends Component {
@@ -12,15 +14,18 @@ class App extends Component {
   componentDidMount() {
     Storage.csvGetDataAsync();
     setTimeout(() => {
+      Storage.csvGetPopulation();
       Storage.cosineSingularityGeneral(15);
     }, 2000);
   }
 
   render() {
     return (
-      <div>
-        <h1>{}</h1>
-      </div>
+      <Router>
+        <div className="app">
+        <Dashboard />
+        </div>
+      </Router>
     );
   }
 }
