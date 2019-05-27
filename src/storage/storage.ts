@@ -6,11 +6,22 @@ class Storage {
     @observable csvDataLines: any = [];
     @observable csvPopulation: any = [];
     @observable cosineResultsData: any = [];
+    @observable imgArray: any = [];
 
     constructor() {
         this.csvGetData = this.csvGetData.bind(this);
         this.cosineSingularityGeneral = this.cosineSingularityGeneral.bind(this);
         this.csvGetPopulation = this.csvGetPopulation.bind(this);
+
+        this.imgArray = ["https://react.semantic-ui.com/images/avatar/small/helen.jpg", "https://react.semantic-ui.com/images/avatar/small/christian.jpg",
+            "https://react.semantic-ui.com/images/avatar/small/daniel.jpg", "https://react.semantic-ui.com/images/avatar/small/stevie.jpg",
+            "https://react.semantic-ui.com/images/avatar/small/elliot.jpg", "https://react.semantic-ui.com/images/avatar/small/tom.jpg",
+            "https://react.semantic-ui.com/images/avatar/small/christian.jpg", "https://react.semantic-ui.com/images/avatar/small/matt.jpg",
+            "https://react.semantic-ui.com/images/avatar/small/lena.png", "https://react.semantic-ui.com/images/avatar/small/lindsay.png",
+            "https://react.semantic-ui.com/images/avatar/small/mark.png", "https://react.semantic-ui.com/images/avatar/small/molly.png",
+            "https://react.semantic-ui.com/images/avatar/small/rachel.png", "https://react.semantic-ui.com/images/avatar/small/lindsay.png",
+            "https://react.semantic-ui.com/images/avatar/small/matthew.png", "https://react.semantic-ui.com/images/avatar/small/jenny.jpg",
+            "https://react.semantic-ui.com/images/avatar/small/veronika.jpg"];
     }
 
     //* Realiza el fecth donde de manera asíncrona se hace la petición
@@ -42,33 +53,72 @@ class Storage {
 
     @action csvGetPopulation() {
         if (this.csvDataLines === 0) return;
+        let indexArray = 0;
         this.csvDataLines.forEach((element: any) => {
             let score = [];
+
             let scoreByGenres = [];
+            let scoreByGenresAvg;
+            let scoreByGenresMedian;
+            let scoreByGenresMin;
+            let scoreByGenresMax;
+
             let scoreByArtists = [];
+            let scoreByArtistsAvg;
+            let scoreByArtistsMedian;
+            let scoreByArtistsMin;
+            let scoreByArtistsMax;
+
             let scoreByFood = [];
+            let scoreByFoodAvg;
+            let scoreByFoodMedian;
+            let scoreByFoodMin;
+            let scoreByFoodMax;
+
             let scoreByDrink = [];
+            let scoreByDrinkAvg;
+            let scoreByDrinkMedian;
+            let scoreByDrinkMin;
+            let scoreByDrinkMax;
+
             let scoreByDiet = [];
+            let scoreByDietAvg;
+            let scoreByDietMedian;
+            let scoreByDietMin;
+            let scoreByDietMax;
 
             for (let index = 0; index < this.csvDataLines[0].length; index++) {
                 let scoreData = {
                     catName: this.csvDataLines[0][index],
                     score: element[index],
                 }
-
                 score.push(scoreData);
             }
 
             scoreByGenres = score.slice(3, 19);
+            scoreByGenresMedian = this.medianByArray(scoreByGenres);
+            scoreByGenresMin = this.leastMiseryByArray(scoreByGenres);
+            scoreByGenresMax = this.mostPleasureByArray(scoreByGenres);
+
             scoreByArtists = score.slice(19, 65);
             scoreByDiet = score.slice(65, 68);
             scoreByFood = score.slice(68, 94);
             scoreByDrink = score.slice(94, 110);
 
+            let random = Math.floor(Math.random() * (this.imgArray.length - 0)) + 0;
+
+
             var population = {
                 name: element[1],
                 age: element[2],
+                index: indexArray,
+                img: this.imgArray[random],
+
                 scoreByGenres: scoreByGenres,
+                scoreByGenresMedian: scoreByGenresMedian,
+                scoreByGenresMin: scoreByGenresMin,
+                scoreByGenresMax: scoreByGenresMax,
+
                 scoreByArtists: scoreByArtists,
                 scoreByDiet: scoreByDiet,
                 scoreByFood: scoreByFood,
@@ -76,6 +126,7 @@ class Storage {
             }
 
             this.csvPopulation.push(population);
+            indexArray += 1;
         });
         console.log(toJS(this.csvPopulation));
     }
@@ -107,32 +158,32 @@ class Storage {
             let scoreByGenresValues = [];
             let scoreByGenresValuesAvg;
             let scoreByGenresValuesMedian;
-            let scoreByGenresValuesMin = [];
-            let scoreByGenresValuesMax = [];
+            let scoreByGenresValuesMin;
+            let scoreByGenresValuesMax;
 
             let scoreByArtistsValues = [];
             let scoreByArtistsValuesAvg;
             let scoreByArtistsValuesMedian;
-            let scoreByArtistsValuesMin = [];
-            let scoreByArtistsValuesMax = [];
+            let scoreByArtistsValuesMin;
+            let scoreByArtistsValuesMax;
 
             let scoreByFoodValues = [];
             let scoreByFoodValuesAvg;
             let scoreByFoodValuesMedian;
-            let scoreByFoodValuesMin = [];
-            let scoreByFoodValuesMax = [];
+            let scoreByFoodValuesMin;
+            let scoreByFoodValuesMax;
 
             let scoreByDrinkValues = [];
             let scoreByDrinkValuesAvg;
             let scoreByDrinkValuesMedian;
-            let scoreByDrinkValuesMin = [];
-            let scoreByDrinkValuesMax = [];
+            let scoreByDrinkValuesMin;
+            let scoreByDrinkValuesMax;
 
             let scoreByDietValues = [];
             let scoreByDietValuesAvg;
             let scoreByDietValuesMedian;
-            let scoreByDietValuesMin = [];
-            let scoreByDietValuesMax = [];
+            let scoreByDietValuesMin;
+            let scoreByDietValuesMax;
 
 
             for (let indexB = 2; indexB < d2.length; indexB++) {
@@ -157,6 +208,7 @@ class Storage {
 
             scoreByGenresValues = cosineResults.slice(1, 17);
             scoreByGenresValuesMedian = this.medianByArray(scoreByGenresValues);
+            scoreByGenresValuesMin = this.leastMiseryByArrayCosine(scoreByGenresValues).slice(0, 5);
             scoreByArtistsValues = cosineResults.slice(17, 63);
             scoreByDietValues = cosineResults.slice(63, 66);
             scoreByFoodValues = cosineResults.slice(66, 92);
@@ -168,6 +220,7 @@ class Storage {
                 cosineResults: cosineResults,
                 scoreByGenresValues: scoreByGenresValues,
                 scoreByGenresValuesMedian: scoreByGenresValuesMedian,
+                scoreByGenresValuesMin: scoreByGenresValuesMin,
                 scoreByArtistsValues: scoreByArtistsValues,
                 scoreByDiet: scoreByDietValues,
                 scoreByFoodValues: scoreByFoodValues,
@@ -181,9 +234,10 @@ class Storage {
     @action medianByArray(dataArray: {}[]) {
         let dataArrayValues: any = [];
         dataArray.forEach((element: any) => {
-            dataArrayValues.push(element.score);
+            dataArrayValues.push(parseFloat(element.score));
         });
 
+        //console.log(dataArrayValues);
         dataArrayValues.sort(function (a: any, b: any) { return a - b });
 
         var half = Math.floor(dataArrayValues.length / 2);
@@ -193,6 +247,18 @@ class Storage {
         } else {
             return (dataArrayValues[half + 1] + dataArrayValues[half]) / 2.0;
         }
+    }
+
+    @action leastMiseryByArrayCosine(dataArray: any) {
+        return dataArray.sort((a: any, b: any) => (a.score > b.score) ? 1 : -1);
+    }
+
+    @action leastMiseryByArray(dataArray: any) {
+        return dataArray.filter((a: any) => a.score <= 2);
+    }
+
+    @action mostPleasureByArray(dataArray: any) {
+        return dataArray.filter((a: any) => a.score >= 9);
     }
 }
 
