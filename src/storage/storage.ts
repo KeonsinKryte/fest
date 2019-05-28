@@ -2,11 +2,12 @@ import { observable, action, toJS, values } from 'mobx';
 import * as Papa from 'papaparse';
 
 class Storage {
-    @observable csvFilePath: string = '/data/fest-responses-v1.csv';
+    @observable csvFilePath: string = '/data/fest-responses-v2.csv';
     @observable csvDataLines: any = [];
     @observable csvPopulation: any = [];
     @observable cosineResultsData: any = [];
     @observable imgArray: any = [];
+    @observable csvSelected: number = 1;
 
     constructor() {
         this.csvGetData = this.csvGetData.bind(this);
@@ -99,11 +100,31 @@ class Storage {
             scoreByGenresMedian = this.medianByArray(scoreByGenres);
             scoreByGenresMin = this.leastMiseryByArray(scoreByGenres);
             scoreByGenresMax = this.mostPleasureByArray(scoreByGenres);
+            scoreByGenresAvg = this.averageByArray(scoreByGenres);
 
             scoreByArtists = score.slice(19, 65);
+            scoreByArtistsMedian = this.medianByArray(scoreByArtists);
+            scoreByArtistsMin = this.leastMiseryByArray(scoreByArtists);
+            scoreByArtistsMax = this.mostPleasureByArray(scoreByArtists);
+            scoreByArtistsAvg = this.averageByArray(scoreByArtists);
+
             scoreByDiet = score.slice(65, 68);
+            scoreByDietMedian = this.medianByArray(scoreByDiet);
+            scoreByDietMin = this.leastMiseryByArray(scoreByDiet);
+            scoreByDietMax = this.mostPleasureByArray(scoreByDiet);
+            scoreByDietAvg = this.averageByArray(scoreByDiet);
+
             scoreByFood = score.slice(68, 94);
+            scoreByFoodMedian = this.medianByArray(scoreByFood);
+            scoreByFoodMin = this.leastMiseryByArray(scoreByFood);
+            scoreByFoodMax = this.mostPleasureByArray(scoreByFood);
+            scoreByFoodAvg = this.averageByArray(scoreByFood);
+
             scoreByDrink = score.slice(94, 110);
+            scoreByDrinkMedian = this.medianByArray(scoreByDrink);
+            scoreByDrinkMin = this.leastMiseryByArray(scoreByDrink);
+            scoreByDrinkMax = this.mostPleasureByArray(scoreByDrink);
+            scoreByDrinkAvg = this.averageByArray(scoreByDrink);
 
             let random = Math.floor(Math.random() * (this.imgArray.length - 0)) + 0;
 
@@ -118,11 +139,31 @@ class Storage {
                 scoreByGenresMedian: scoreByGenresMedian,
                 scoreByGenresMin: scoreByGenresMin,
                 scoreByGenresMax: scoreByGenresMax,
+                scoreByGenresAvg: scoreByGenresAvg,
 
                 scoreByArtists: scoreByArtists,
+                scoreByArtistsMedian: scoreByArtistsMedian,
+                scoreByArtistsMin: scoreByArtistsMin,
+                scoreByArtistsMax: scoreByArtistsMax,
+                scoreByArtistsAvg: scoreByArtistsAvg,
+
                 scoreByDiet: scoreByDiet,
+                scoreByDietMedian: scoreByDietMedian,
+                scoreByDietMin: scoreByDietMin,
+                scoreByDietMax: scoreByDietMax,
+                scoreByDietAvg: scoreByDietAvg,
+
                 scoreByFood: scoreByFood,
+                scoreByFoodMedian: scoreByFoodMedian,
+                scoreByFoodMin: scoreByFoodMin,
+                scoreByFoodMax: scoreByFoodMax,
+                scoreByFoodAvg: scoreByFoodAvg,
+
                 scoreByDrink: scoreByDrink,
+                scoreByDrinkMedian: scoreByDrinkMedian,
+                scoreByDrinkMin: scoreByDrinkMin,
+                scoreByDrinkMax: scoreByDrinkMax,
+                scoreByDrinkAvg: scoreByDrinkAvg,
             }
 
             this.csvPopulation.push(population);
@@ -194,7 +235,7 @@ class Storage {
                 magD1 = Math.abs(Math.sqrt(sumD1));
                 magD2 = Math.abs(Math.sqrt(sumD2));
 
-                let result = sumD1D2 / (magD1 * magD2);
+                let result = (sumD1D2 / (magD1 * magD2)) * 100;
 
                 //console.log(result);
 
@@ -209,22 +250,67 @@ class Storage {
             scoreByGenresValues = cosineResults.slice(1, 17);
             scoreByGenresValuesMedian = this.medianByArray(scoreByGenresValues);
             scoreByGenresValuesMin = this.leastMiseryByArrayCosine(scoreByGenresValues).slice(0, 5);
+            scoreByGenresValuesMax = this.mostPleasureByArrayCosine(scoreByGenresValues).slice(0, 5);
+            scoreByGenresValuesAvg = this.averageByArray(scoreByGenresValues);
+
             scoreByArtistsValues = cosineResults.slice(17, 63);
+            scoreByArtistsValuesMedian = this.medianByArray(scoreByArtistsValues);
+            scoreByArtistsValuesMin = this.leastMiseryByArrayCosine(scoreByArtistsValues).slice(0, 5);
+            scoreByArtistsValuesMax = this.mostPleasureByArrayCosine(scoreByArtistsValues).slice(0, 5);
+            scoreByArtistsValuesAvg = this.averageByArray(scoreByArtistsValues);
+
             scoreByDietValues = cosineResults.slice(63, 66);
+            scoreByDietValuesMedian = this.medianByArray(scoreByDietValues);
+            scoreByDietValuesMin = this.leastMiseryByArrayCosine(scoreByDietValues).slice(0, 5);
+            scoreByDietValuesMax = this.mostPleasureByArrayCosine(scoreByDietValues).slice(0, 5);
+            scoreByDietValuesAvg = this.averageByArray(scoreByDietValues);
+
             scoreByFoodValues = cosineResults.slice(66, 92);
+            scoreByFoodValuesMedian = this.medianByArray(scoreByFoodValues);
+            scoreByFoodValuesMin = this.leastMiseryByArrayCosine(scoreByFoodValues).slice(0, 5);
+            scoreByFoodValuesMax = this.mostPleasureByArrayCosine(scoreByFoodValues).slice(0, 5);
+            scoreByFoodValuesAvg = this.averageByArray(scoreByFoodValues);
+
             scoreByDrinkValues = cosineResults.slice(92, 108);
+            scoreByDrinkValuesMedian = this.medianByArray(scoreByDrinkValues);
+            scoreByDrinkValuesMin = this.leastMiseryByArrayCosine(scoreByDrinkValues).slice(0, 5);
+            scoreByDrinkValuesMax = this.mostPleasureByArrayCosine(scoreByDrinkValues).slice(0, 5);
+            scoreByDrinkValuesAvg = this.averageByArray(scoreByDrinkValues);
 
             var cosineResultsObj = {
                 name: d2[1],
                 age: d2[2],
                 cosineResults: cosineResults,
+
                 scoreByGenresValues: scoreByGenresValues,
                 scoreByGenresValuesMedian: scoreByGenresValuesMedian,
                 scoreByGenresValuesMin: scoreByGenresValuesMin,
+                scoreByGenresValuesMax: scoreByGenresValuesMax,
+                scoreByGenresValuesAvg: scoreByGenresValuesAvg,
+
                 scoreByArtistsValues: scoreByArtistsValues,
-                scoreByDiet: scoreByDietValues,
+                scoreByArtistsValuesMedian: scoreByArtistsValuesMedian,
+                scoreByArtistsValuesMin: scoreByArtistsValuesMin,
+                scoreByArtistsValuesMax: scoreByArtistsValuesMax,
+                scoreByArtistsValuesAvg: scoreByArtistsValuesAvg,
+
+                scoreByDietValues: scoreByDietValues,
+                scoreByDietValuesMedianMedian: scoreByDietValuesMedian,
+                scoreByDietValuesMin: scoreByDietValuesMin,
+                scoreByDietValuesMax: scoreByDietValuesMax,
+                scoreByDietValuesAvg: scoreByDietValuesAvg,
+
                 scoreByFoodValues: scoreByFoodValues,
+                scoreByFoodValuesMedian: scoreByFoodValuesMedian,
+                scoreByFoodValuesMin: scoreByFoodValuesMin,
+                scoreByFoodValuesMax: scoreByFoodValuesMax,
+                scoreByFoodValuesAvg: scoreByFoodValuesAvg,
+
                 scoreByDrinkValues: scoreByDrinkValues,
+                scoreByDrinkValuesMedian: scoreByDrinkValuesMedian,
+                scoreByDrinkValuesMin: scoreByDrinkValuesMin,
+                scoreByDrinkValuesMax: scoreByDrinkValuesMax,
+                scoreByDrinkValuesAvg: scoreByDrinkValuesAvg,
             }
             this.cosineResultsData.push(cosineResultsObj);
         }
@@ -253,12 +339,28 @@ class Storage {
         return dataArray.sort((a: any, b: any) => (a.score > b.score) ? 1 : -1);
     }
 
+    @action mostPleasureByArrayCosine(dataArray: any) {
+        return dataArray.sort((a: any, b: any) => (a.score < b.score) ? 1 : -1);
+    }
+
     @action leastMiseryByArray(dataArray: any) {
-        return dataArray.filter((a: any) => a.score <= 2);
+        return dataArray.filter((a: any) => a.score <= 1);
     }
 
     @action mostPleasureByArray(dataArray: any) {
         return dataArray.filter((a: any) => a.score >= 9);
+    }
+
+    @action averageByArray(dataArray: any) {
+        if (dataArray.length === 0) return;
+        let sum = 0;
+        let avg = 0;
+        dataArray.forEach((element: any) => {
+            sum += parseInt(element.score);
+        });
+        avg = sum / dataArray.length;
+
+        return avg;
     }
 }
 
