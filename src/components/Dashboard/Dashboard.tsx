@@ -1,9 +1,11 @@
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
+import { Button, Icon, Item } from 'semantic-ui-react';
 
 import './_Dashboard.scss';
 
 import Storage from '../../storage/storage';
+import { toJS } from 'mobx';
 
 const Dashboard = () => {
     return (
@@ -14,14 +16,17 @@ const Dashboard = () => {
                         if (pop.index === 0) return;
                         return (
                             <div role="listitem" className="item" key={pop.index}>
-                                <div className="right floated content">
-                                    <div className="ui buttons">
-                                        <button key={pop.index} onClick={() => {
-                                            Storage.csvSelected = pop.index;
-                                        }}
-                                            className="ui tiny compact button">View</button>
-                                        <div className="or" data-text="or"></div>
-                                        <button className="ui tiny compact teal button">Add</button>
+                                <div className="column">
+                                    <div className="right floated content">
+                                        <Button.Group size='tiny'>
+                                            <Button onClick={() => {
+                                                Storage.csvSelected = pop.index;
+                                                Storage.cosineResultsData = [];
+                                                Storage.cosineSingularityGeneral(pop.index);
+                                            }}>View</Button>
+                                            <Button.Or />
+                                            <Button onClick={() => Storage.csvSelectedGroup.push(Storage.csvPopulation[pop.index])}>Add</Button>
+                                        </Button.Group>
                                     </div>
                                 </div>
                                 <img src={pop.img} className="ui avatar image" />
@@ -38,7 +43,7 @@ const Dashboard = () => {
             </div>
 
             <div className="eight wide column">
-            <h1>Sumarry</h1>
+                <h1>Sumarry</h1>
                 <div role="list" className="ui massive horizontal list">
                     <div role="listitem" className="item">
                         <img
@@ -196,10 +201,21 @@ const Dashboard = () => {
                         </div>
                     </div>
                 </div>
-            </div>
-
-            <div className="three wide column">
-                <img src="/images/wireframe/media-paragraph.png" className="ui image" />
+                <br/>
+                <br/>
+                <div className="row">
+                    <Item.Group>
+                        <Item>
+                        <Item.Image size='tiny' src={Storage.cosineRanking && Storage.cosineRanking[1].name} />
+                            <Item.Content verticalAlign='middle'>
+                                <Item.Header>
+                                    <Icon name='like' />
+                                    {Storage.cosineRanking && Storage.cosineRanking[1].name}
+                                    </Item.Header>
+                            </Item.Content>
+                        </Item>
+                    </Item.Group>
+                </div>
             </div>
         </div>
     );

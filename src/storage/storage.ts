@@ -1,18 +1,22 @@
 import { observable, action, toJS, values } from 'mobx';
 import * as Papa from 'papaparse';
+import * as math from 'mathjs'
 
 class Storage {
     @observable csvFilePath: string = '/data/fest-responses-v2.csv';
     @observable csvDataLines: any = [];
     @observable csvPopulation: any = [];
     @observable cosineResultsData: any = [];
+    @observable cosineRanking: any = [];
     @observable imgArray: any = [];
     @observable csvSelected: number = 1;
+    @observable csvSelectedGroup: any = [];
 
     constructor() {
         this.csvGetData = this.csvGetData.bind(this);
         this.cosineSingularityGeneral = this.cosineSingularityGeneral.bind(this);
         this.csvGetPopulation = this.csvGetPopulation.bind(this);
+        this.csvFest = this.csvFest.bind(this);
 
         this.imgArray = ["https://react.semantic-ui.com/images/avatar/small/helen.jpg", "https://react.semantic-ui.com/images/avatar/small/christian.jpg",
             "https://react.semantic-ui.com/images/avatar/small/daniel.jpg", "https://react.semantic-ui.com/images/avatar/small/stevie.jpg",
@@ -135,6 +139,8 @@ class Storage {
                 index: indexArray,
                 img: this.imgArray[random],
 
+                score: score,
+
                 scoreByGenres: scoreByGenres,
                 scoreByGenresMedian: scoreByGenresMedian,
                 scoreByGenresMin: scoreByGenresMin,
@@ -181,6 +187,16 @@ class Storage {
         });
     }
 
+    @action csvFest(dataArray: {}[]) {
+        let sum = 0;
+        dataArray.forEach((element: any) => {
+            for (let index = 0; index < dataArray.length; index++) {
+                sum += parseInt(element.score[index].score);
+                console.log(sum);
+            }
+        });
+    }
+
     @action cosineSingularityGeneral(userIndex: number) {
         if (this.csvDataLines.length === 0) return;
         let d1 = this.csvDataLines[userIndex];
@@ -196,35 +212,42 @@ class Storage {
             var magD1 = 0;
             var magD2 = 0;
 
+            let scoreFinal;
+
             let scoreByGenresValues = [];
-            let scoreByGenresValuesAvg;
+            let scoreByGenresValuesAvg: undefined | any;
             let scoreByGenresValuesMedian;
             let scoreByGenresValuesMin;
             let scoreByGenresValuesMax;
+            let scoreByGenresValuesStd;
 
             let scoreByArtistsValues = [];
-            let scoreByArtistsValuesAvg;
+            let scoreByArtistsValuesAvg: undefined | any;
             let scoreByArtistsValuesMedian;
             let scoreByArtistsValuesMin;
             let scoreByArtistsValuesMax;
+            let scoreByArtistsValuesStd;
 
             let scoreByFoodValues = [];
-            let scoreByFoodValuesAvg;
+            let scoreByFoodValuesAvg: undefined | any;
             let scoreByFoodValuesMedian;
             let scoreByFoodValuesMin;
             let scoreByFoodValuesMax;
+            let scoreByFoodValuesStd;
 
             let scoreByDrinkValues = [];
-            let scoreByDrinkValuesAvg;
+            let scoreByDrinkValuesAvg: undefined | any;
             let scoreByDrinkValuesMedian;
             let scoreByDrinkValuesMin;
             let scoreByDrinkValuesMax;
+            let scoreByDrinkValuesStd;
 
             let scoreByDietValues = [];
-            let scoreByDietValuesAvg;
+            let scoreByDietValuesAvg: undefined | any;
             let scoreByDietValuesMedian;
             let scoreByDietValuesMin;
             let scoreByDietValuesMax;
+            let scoreByDietValuesStd;
 
 
             for (let indexB = 2; indexB < d2.length; indexB++) {
@@ -252,30 +275,37 @@ class Storage {
             scoreByGenresValuesMin = this.leastMiseryByArrayCosine(scoreByGenresValues).slice(0, 5);
             scoreByGenresValuesMax = this.mostPleasureByArrayCosine(scoreByGenresValues).slice(0, 5);
             scoreByGenresValuesAvg = this.averageByArray(scoreByGenresValues);
+            scoreByGenresValuesStd = this.standardDerivation(scoreByGenresValues);
 
             scoreByArtistsValues = cosineResults.slice(17, 63);
             scoreByArtistsValuesMedian = this.medianByArray(scoreByArtistsValues);
             scoreByArtistsValuesMin = this.leastMiseryByArrayCosine(scoreByArtistsValues).slice(0, 5);
             scoreByArtistsValuesMax = this.mostPleasureByArrayCosine(scoreByArtistsValues).slice(0, 5);
             scoreByArtistsValuesAvg = this.averageByArray(scoreByArtistsValues);
+            scoreByArtistsValuesStd = this.standardDerivation(scoreByArtistsValues);
 
             scoreByDietValues = cosineResults.slice(63, 66);
             scoreByDietValuesMedian = this.medianByArray(scoreByDietValues);
             scoreByDietValuesMin = this.leastMiseryByArrayCosine(scoreByDietValues).slice(0, 5);
             scoreByDietValuesMax = this.mostPleasureByArrayCosine(scoreByDietValues).slice(0, 5);
             scoreByDietValuesAvg = this.averageByArray(scoreByDietValues);
+            scoreByDietValuesStd = this.standardDerivation(scoreByDietValues);
 
             scoreByFoodValues = cosineResults.slice(66, 92);
             scoreByFoodValuesMedian = this.medianByArray(scoreByFoodValues);
             scoreByFoodValuesMin = this.leastMiseryByArrayCosine(scoreByFoodValues).slice(0, 5);
             scoreByFoodValuesMax = this.mostPleasureByArrayCosine(scoreByFoodValues).slice(0, 5);
             scoreByFoodValuesAvg = this.averageByArray(scoreByFoodValues);
+            scoreByFoodValuesStd = this.standardDerivation(scoreByFoodValues);
 
             scoreByDrinkValues = cosineResults.slice(92, 108);
             scoreByDrinkValuesMedian = this.medianByArray(scoreByDrinkValues);
             scoreByDrinkValuesMin = this.leastMiseryByArrayCosine(scoreByDrinkValues).slice(0, 5);
             scoreByDrinkValuesMax = this.mostPleasureByArrayCosine(scoreByDrinkValues).slice(0, 5);
             scoreByDrinkValuesAvg = this.averageByArray(scoreByDrinkValues);
+            scoreByDrinkValuesStd = this.standardDerivation(scoreByDrinkValues);
+
+            scoreFinal = ((scoreByGenresValuesAvg + scoreByArtistsValuesAvg + scoreByDietValuesAvg + scoreByFoodValuesAvg + scoreByDrinkValuesAvg) / 5);
 
             var cosineResultsObj = {
                 name: d2[1],
@@ -287,34 +317,43 @@ class Storage {
                 scoreByGenresValuesMin: scoreByGenresValuesMin,
                 scoreByGenresValuesMax: scoreByGenresValuesMax,
                 scoreByGenresValuesAvg: scoreByGenresValuesAvg,
+                scoreByGenresValuesStd: scoreByGenresValuesStd,
 
                 scoreByArtistsValues: scoreByArtistsValues,
                 scoreByArtistsValuesMedian: scoreByArtistsValuesMedian,
                 scoreByArtistsValuesMin: scoreByArtistsValuesMin,
                 scoreByArtistsValuesMax: scoreByArtistsValuesMax,
                 scoreByArtistsValuesAvg: scoreByArtistsValuesAvg,
+                scoreByArtistsValuesStd: scoreByArtistsValuesStd,
 
                 scoreByDietValues: scoreByDietValues,
                 scoreByDietValuesMedianMedian: scoreByDietValuesMedian,
                 scoreByDietValuesMin: scoreByDietValuesMin,
                 scoreByDietValuesMax: scoreByDietValuesMax,
                 scoreByDietValuesAvg: scoreByDietValuesAvg,
+                scoreByDietValuesStd: scoreByDietValuesStd,
 
                 scoreByFoodValues: scoreByFoodValues,
                 scoreByFoodValuesMedian: scoreByFoodValuesMedian,
                 scoreByFoodValuesMin: scoreByFoodValuesMin,
                 scoreByFoodValuesMax: scoreByFoodValuesMax,
                 scoreByFoodValuesAvg: scoreByFoodValuesAvg,
+                scoreByFoodValuesStd: scoreByFoodValuesStd,
 
                 scoreByDrinkValues: scoreByDrinkValues,
                 scoreByDrinkValuesMedian: scoreByDrinkValuesMedian,
                 scoreByDrinkValuesMin: scoreByDrinkValuesMin,
                 scoreByDrinkValuesMax: scoreByDrinkValuesMax,
                 scoreByDrinkValuesAvg: scoreByDrinkValuesAvg,
+                scoreByDrinkValuesStd: scoreByDrinkValuesStd,
+
+                scoreFinal: scoreFinal,
             }
             this.cosineResultsData.push(cosineResultsObj);
         }
+        this.cosineRanking = this.rankingByArrayCosine(this.cosineResultsData);
         console.log(toJS(this.cosineResultsData));
+        console.log(toJS(this.cosineRanking));
     }
 
     @action medianByArray(dataArray: {}[]) {
@@ -335,6 +374,10 @@ class Storage {
         }
     }
 
+    @action rankingByArrayCosine(dataArray: any) {
+        return dataArray.sort((a: any, b: any) => (a.scoreFinal < b.scoreFinal) ? 1 : -1);
+    }
+
     @action leastMiseryByArrayCosine(dataArray: any) {
         return dataArray.sort((a: any, b: any) => (a.score > b.score) ? 1 : -1);
     }
@@ -348,7 +391,7 @@ class Storage {
     }
 
     @action mostPleasureByArray(dataArray: any) {
-        return dataArray.filter((a: any) => a.score >= 9);
+        return dataArray.filter((a: any) => a.score >= 5);
     }
 
     @action averageByArray(dataArray: any) {
@@ -361,6 +404,14 @@ class Storage {
         avg = sum / dataArray.length;
 
         return avg;
+    }
+
+    @action standardDerivation(dataArray: any) {
+        let dataArrayValues: any = [];
+        dataArray.forEach((element: any) => {
+            dataArrayValues.push(parseFloat(element.score));
+        });
+        return math.std(dataArrayValues);
     }
 }
 
