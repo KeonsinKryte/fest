@@ -15,8 +15,8 @@ class App extends Component {
     Storage.csvGetDataAsync();
     setTimeout(() => {
       Storage.csvGetPopulation();
-      Storage.csvFest(Storage.csvPopulation);
       Storage.cosineSingularityGeneral(1);
+      Storage.csvFest();
     }, 2000);
   }
 

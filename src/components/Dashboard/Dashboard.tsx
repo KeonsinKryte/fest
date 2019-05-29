@@ -10,6 +10,7 @@ import { toJS } from 'mobx';
 const Dashboard = () => {
     return (
         <div className="ui grid">
+            {console.log(Storage.csvSelectedGroup)}
             <div className="five wide column">
                 <div role="list" className="ui medium very relaxed list populationList">
                     {Storage.csvPopulation && Storage.csvPopulation.map((pop: any) => {
@@ -25,7 +26,10 @@ const Dashboard = () => {
                                                 Storage.cosineSingularityGeneral(pop.index);
                                             }}>View</Button>
                                             <Button.Or />
-                                            <Button onClick={() => Storage.csvSelectedGroup.push(Storage.csvPopulation[pop.index])}>Add</Button>
+                                            <Button onClick={() => {
+                                                Storage.csvSelectedGroup.push(Storage.csvPopulation[pop.index]);
+                                                Storage.csvFest();
+                                            }}>Add</Button>
                                         </Button.Group>
                                     </div>
                                 </div>
@@ -206,11 +210,11 @@ const Dashboard = () => {
                 <div className="row">
                     <Item.Group>
                         <Item>
-                        <Item.Image size='tiny' src={Storage.cosineRanking && Storage.cosineRanking[1].name} />
+                        <Item.Image size='tiny' src={Storage.cosineRanking[1] && Storage.cosineRanking[1].name} />
                             <Item.Content verticalAlign='middle'>
                                 <Item.Header>
                                     <Icon name='like' />
-                                    {Storage.cosineRanking && Storage.cosineRanking[1].name}
+                                    {Storage.cosineRanking[1] && Storage.cosineRanking[1].name}
                                     </Item.Header>
                             </Item.Content>
                         </Item>

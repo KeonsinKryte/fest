@@ -11,6 +11,8 @@ class Storage {
     @observable imgArray: any = [];
     @observable csvSelected: number = 1;
     @observable csvSelectedGroup: any = [];
+    @observable groupResults: any = [];
+    @observable festResults: any = [];
 
     constructor() {
         this.csvGetData = this.csvGetData.bind(this);
@@ -102,32 +104,32 @@ class Storage {
 
             scoreByGenres = score.slice(3, 19);
             scoreByGenresMedian = this.medianByArray(scoreByGenres);
-            scoreByGenresMin = this.leastMiseryByArray(scoreByGenres);
-            scoreByGenresMax = this.mostPleasureByArray(scoreByGenres);
+            scoreByGenresMin = this.leastMiseryByArray(scoreByGenres, 1);
+            scoreByGenresMax = this.mostPleasureByArray(scoreByGenres, 5);
             scoreByGenresAvg = this.averageByArray(scoreByGenres);
 
             scoreByArtists = score.slice(19, 65);
             scoreByArtistsMedian = this.medianByArray(scoreByArtists);
-            scoreByArtistsMin = this.leastMiseryByArray(scoreByArtists);
-            scoreByArtistsMax = this.mostPleasureByArray(scoreByArtists);
+            scoreByArtistsMin = this.leastMiseryByArray(scoreByArtists, 1);
+            scoreByArtistsMax = this.mostPleasureByArray(scoreByArtists, 5);
             scoreByArtistsAvg = this.averageByArray(scoreByArtists);
 
             scoreByDiet = score.slice(65, 68);
             scoreByDietMedian = this.medianByArray(scoreByDiet);
-            scoreByDietMin = this.leastMiseryByArray(scoreByDiet);
-            scoreByDietMax = this.mostPleasureByArray(scoreByDiet);
+            scoreByDietMin = this.leastMiseryByArray(scoreByDiet, 1);
+            scoreByDietMax = this.mostPleasureByArray(scoreByDiet, 5);
             scoreByDietAvg = this.averageByArray(scoreByDiet);
 
             scoreByFood = score.slice(68, 94);
             scoreByFoodMedian = this.medianByArray(scoreByFood);
-            scoreByFoodMin = this.leastMiseryByArray(scoreByFood);
-            scoreByFoodMax = this.mostPleasureByArray(scoreByFood);
+            scoreByFoodMin = this.leastMiseryByArray(scoreByFood, 1);
+            scoreByFoodMax = this.mostPleasureByArray(scoreByFood, 5);
             scoreByFoodAvg = this.averageByArray(scoreByFood);
 
             scoreByDrink = score.slice(94, 110);
             scoreByDrinkMedian = this.medianByArray(scoreByDrink);
-            scoreByDrinkMin = this.leastMiseryByArray(scoreByDrink);
-            scoreByDrinkMax = this.mostPleasureByArray(scoreByDrink);
+            scoreByDrinkMin = this.leastMiseryByArray(scoreByDrink, 1);
+            scoreByDrinkMax = this.mostPleasureByArray(scoreByDrink, 5);
             scoreByDrinkAvg = this.averageByArray(scoreByDrink);
 
             let random = Math.floor(Math.random() * (this.imgArray.length - 0)) + 0;
@@ -187,14 +189,188 @@ class Storage {
         });
     }
 
-    @action csvFest(dataArray: {}[]) {
-        let sum = 0;
-        dataArray.forEach((element: any) => {
-            for (let index = 0; index < dataArray.length; index++) {
-                sum += parseInt(element.score[index].score);
-                console.log(sum);
+    @action csvFest() {
+        if (this.csvPopulation.length === 0) return;
+        let festAvgScore = [];
+
+        let festAvgGenres = [];
+        let festAvgGenresMin = [];
+        let festAvgGenresMax = [];
+
+        let festAvgArtists = [];
+        let festAvgArtistsMin = [];
+        let festAvgArtistsMax = [];
+
+        let festAvgDiet = [];
+        let festAvgDietMin = [];
+        let festAvgDietMax = [];
+
+        let festAvgFood = [];
+        let festAvgFoodMin = [];
+        let festAvgFoodMax = [];
+
+        let festAvgDrink = [];
+        let festAvgDrinkMin = [];
+        let festAvgDrinkMax = [];
+
+        for (let index = 0; index < 110; index++) {
+            var festAvg = 0;
+            var sum = 0;
+
+            this.csvPopulation.slice(1, 110).forEach((element: any) => {
+                //console.log(toJS(element.score[index]));
+                sum += (parseInt(element.score[index].score));
+            });
+
+            festAvg = (sum / parseInt(this.csvPopulation.length));
+            //console.log(festAvg);
+
+            let userDataAvg = {
+                catName: this.csvDataLines[0][index],
+                score: festAvg,
             }
-        });
+
+            festAvgScore.push(userDataAvg);
+        }
+
+        festAvgGenres = festAvgScore.slice(3, 19);
+        festAvgGenresMin = this.leastMiseryByArray(festAvgGenres, 2).slice(0, 5);
+        festAvgGenresMax = this.mostPleasureByArray(festAvgGenres, 3).slice(0, 5);
+
+        festAvgArtists = festAvgScore.slice(19, 65);
+        festAvgArtistsMin = this.leastMiseryByArray(festAvgArtists, 2).slice(0, 5);
+        festAvgArtistsMax = this.mostPleasureByArray(festAvgArtists, 3).slice(0, 5);
+
+        festAvgDiet = festAvgScore.slice(65, 68);
+        festAvgDietMin = this.leastMiseryByArray(festAvgDiet, 2).slice(0, 5);
+        festAvgDietMax = this.mostPleasureByArray(festAvgDiet, 3).slice(0, 5);
+
+        festAvgFood = festAvgScore.slice(68, 94);
+        festAvgFoodMin = this.leastMiseryByArray(festAvgFood, 3).slice(0, 5);
+        festAvgFoodMax = this.mostPleasureByArray(festAvgFood, 3).slice(0, 5);
+
+        festAvgDrink = festAvgScore.slice(94, 110);
+        festAvgDrinkMin = this.leastMiseryByArray(festAvgDrink, 2).slice(0, 5);
+        festAvgDrinkMax = this.mostPleasureByArray(festAvgDrink, 3).slice(0, 5);
+
+        let festResult = {
+            festAvgScore: festAvgScore,
+
+            festAvgGenres: festAvgGenres,
+            festAvgGenresMin: festAvgGenresMin,
+            festAvgGenresMax: festAvgGenresMax,
+
+            festAvgArtists: festAvgArtists,
+            festAvgArtistsMin: festAvgArtistsMin,
+            festAvgArtistsMax: festAvgArtistsMax,
+
+            festAvgDiet: festAvgDiet,
+            festAvgDietMin: festAvgDietMin,
+            festAvgDietMax: festAvgDietMax,
+
+            festAvgFood: festAvgFood,
+            festAvgFoodMin: festAvgFoodMin,
+            festAvgFoodMax: festAvgFoodMax,
+
+            festAvgDrink: festAvgDrink,
+            festAvgDrinkMin: festAvgDrinkMin,
+            festAvgDrinkMax: festAvgDrinkMax,
+        }
+
+        this.festResults.push(festResult);
+        console.log(toJS(festResult));
+    }
+
+    @action compareByArrayGroup(){
+        if (this.csvSelectedGroup.length === 0) return;
+        let groupAvgScore = [];
+
+        let groupAvgGenres = [];
+        let groupAvgGenresMin = [];
+        let groupAvgGenresMax = [];
+
+        let groupAvgArtists = [];
+        let groupAvgArtistsMin = [];
+        let groupAvgArtistsMax = [];
+
+        let groupAvgDiet = [];
+        let groupAvgDietMin = [];
+        let groupAvgDietMax = [];
+
+        let groupAvgFood = [];
+        let groupAvgFoodMin = [];
+        let groupAvgFoodMax = [];
+
+        let groupAvgDrink = [];
+        let groupAvgDrinkMin = [];
+        let groupAvgDrinkMax = [];
+
+        for (let index = 0; index < 110; index++) {
+            var groupAvg = 0;
+            var sum = 0;
+
+            this.csvPopulation.slice(1, 110).forEach((element: any) => {
+                //console.log(toJS(element.score[index]));
+                sum += (parseInt(element.score[index].score));
+            });
+
+            groupAvg = (sum / parseInt(this.csvPopulation.length));
+            //console.log(groupAvg);
+
+            let userDataAvg = {
+                catName: this.csvDataLines[0][index],
+                score: groupAvg,
+            }
+
+            groupAvgScore.push(userDataAvg);
+        }
+
+        groupAvgGenres = groupAvgScore.slice(3, 19);
+        groupAvgGenresMin = this.leastMiseryByArray(groupAvgGenres, 2).slice(0, 5);
+        groupAvgGenresMax = this.mostPleasureByArray(groupAvgGenres, 3).slice(0, 5);
+
+        groupAvgArtists = groupAvgScore.slice(19, 65);
+        groupAvgArtistsMin = this.leastMiseryByArray(groupAvgArtists, 2).slice(0, 5);
+        groupAvgArtistsMax = this.mostPleasureByArray(groupAvgArtists, 3).slice(0, 5);
+
+        groupAvgDiet = groupAvgScore.slice(65, 68);
+        groupAvgDietMin = this.leastMiseryByArray(groupAvgDiet, 2).slice(0, 5);
+        groupAvgDietMax = this.mostPleasureByArray(groupAvgDiet, 3).slice(0, 5);
+
+        groupAvgFood = groupAvgScore.slice(68, 94);
+        groupAvgFoodMin = this.leastMiseryByArray(groupAvgFood, 3).slice(0, 5);
+        groupAvgFoodMax = this.mostPleasureByArray(groupAvgFood, 3).slice(0, 5);
+
+        groupAvgDrink = groupAvgScore.slice(94, 110);
+        groupAvgDrinkMin = this.leastMiseryByArray(groupAvgDrink, 2).slice(0, 5);
+        groupAvgDrinkMax = this.mostPleasureByArray(groupAvgDrink, 3).slice(0, 5);
+
+        let groupResult = {
+            groupAvgScore: groupAvgScore,
+
+            groupAvgGenres: groupAvgGenres,
+            groupAvgGenresMin: groupAvgGenresMin,
+            groupAvgGenresMax: groupAvgGenresMax,
+
+            groupAvgArtists: groupAvgArtists,
+            groupAvgArtistsMin: groupAvgArtistsMin,
+            groupAvgArtistsMax: groupAvgArtistsMax,
+
+            groupAvgDiet: groupAvgDiet,
+            groupAvgDietMin: groupAvgDietMin,
+            groupAvgDietMax: groupAvgDietMax,
+
+            groupAvgFood: groupAvgFood,
+            groupAvgFoodMin: groupAvgFoodMin,
+            groupAvgFoodMax: groupAvgFoodMax,
+
+            groupAvgDrink: groupAvgDrink,
+            groupAvgDrinkMin: groupAvgDrinkMin,
+            groupAvgDrinkMax: groupAvgDrinkMax,
+        }
+
+        this.groupResults.push(groupResult);
+        console.log(toJS(groupResult));
     }
 
     @action cosineSingularityGeneral(userIndex: number) {
@@ -386,12 +562,12 @@ class Storage {
         return dataArray.sort((a: any, b: any) => (a.score < b.score) ? 1 : -1);
     }
 
-    @action leastMiseryByArray(dataArray: any) {
-        return dataArray.filter((a: any) => a.score <= 1);
+    @action leastMiseryByArray(dataArray: any, filter: number) {
+        return dataArray.filter((a: any) => a.score <= filter);
     }
 
-    @action mostPleasureByArray(dataArray: any) {
-        return dataArray.filter((a: any) => a.score >= 5);
+    @action mostPleasureByArray(dataArray: any, filter: number) {
+        return dataArray.filter((a: any) => a.score >= filter);
     }
 
     @action averageByArray(dataArray: any) {
