@@ -19,6 +19,7 @@ class Storage {
         this.cosineSingularityGeneral = this.cosineSingularityGeneral.bind(this);
         this.csvGetPopulation = this.csvGetPopulation.bind(this);
         this.csvFest = this.csvFest.bind(this);
+        this.compareByArrayGroup = this.compareByArrayGroup.bind(this);
 
         this.imgArray = ["https://react.semantic-ui.com/images/avatar/small/helen.jpg", "https://react.semantic-ui.com/images/avatar/small/christian.jpg",
             "https://react.semantic-ui.com/images/avatar/small/daniel.jpg", "https://react.semantic-ui.com/images/avatar/small/stevie.jpg",
@@ -57,6 +58,9 @@ class Storage {
             //console.log(this.csvDataLines[0][1]);
         }
     }
+
+    //Population crea el objeto modelo que se encargará de pintar y seleccionar los datos básicos
+    //Desarrollo primer punto
 
     @action csvGetPopulation() {
         if (this.csvDataLines === 0) return;
@@ -189,6 +193,8 @@ class Storage {
         });
     }
 
+    //Crea el objeto modelo que determina el festival ideal basado en el csv obtenido
+
     @action csvFest() {
         if (this.csvPopulation.length === 0) return;
         let festAvgScore = [];
@@ -278,8 +284,10 @@ class Storage {
         }
 
         this.festResults.push(festResult);
-        console.log(toJS(festResult));
+        console.log(toJS(this.festResults));
     }
+
+    //Compara el grupo y aplica los algortimos que determinan el promedio entre un grupo aleatorio que el usuario crea
 
     @action compareByArrayGroup(){
         if (this.csvSelectedGroup.length === 0) return;
@@ -309,12 +317,12 @@ class Storage {
             var groupAvg = 0;
             var sum = 0;
 
-            this.csvPopulation.slice(1, 110).forEach((element: any) => {
+            this.csvSelectedGroup.slice(1, 110).forEach((element: any) => {
                 //console.log(toJS(element.score[index]));
                 sum += (parseInt(element.score[index].score));
             });
 
-            groupAvg = (sum / parseInt(this.csvPopulation.length));
+            groupAvg = (sum / parseInt(this.csvSelectedGroup.length));
             //console.log(groupAvg);
 
             let userDataAvg = {
@@ -372,6 +380,8 @@ class Storage {
         this.groupResults.push(groupResult);
         console.log(toJS(groupResult));
     }
+
+    //Coseno de singularidad que permite ver la distancia entre dos personas
 
     @action cosineSingularityGeneral(userIndex: number) {
         if (this.csvDataLines.length === 0) return;
@@ -481,11 +491,14 @@ class Storage {
             scoreByDrinkValuesAvg = this.averageByArray(scoreByDrinkValues);
             scoreByDrinkValuesStd = this.standardDerivation(scoreByDrinkValues);
 
+            let random = Math.floor(Math.random() * (this.imgArray.length - 0)) + 0;
+
             scoreFinal = ((scoreByGenresValuesAvg + scoreByArtistsValuesAvg + scoreByDietValuesAvg + scoreByFoodValuesAvg + scoreByDrinkValuesAvg) / 5);
 
             var cosineResultsObj = {
                 name: d2[1],
                 age: d2[2],
+                img: this.imgArray[random],
                 cosineResults: cosineResults,
 
                 scoreByGenresValues: scoreByGenresValues,
