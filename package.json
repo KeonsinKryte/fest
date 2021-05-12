@@ -11,7 +11,7 @@
     "@types/react-dom": "16.8.4",
     "@types/react-router-dom": "^4.3.3",
     "fs": "^0.0.1-security",
-    "mathjs": "^5.10.3",
+    "mathjs": "^7.5.1",
     "mobx": "^5.9.4",
     "mobx-react": "^5.4.4",
     "node-sass": "^4.12.0",
